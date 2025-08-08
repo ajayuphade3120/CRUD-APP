@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-5">
-            <h2>Create User Data</h2>
+            <h2>Create New User</h2>
   </div>
   <form @submit.prevent="handleSubmit">
     <div>
