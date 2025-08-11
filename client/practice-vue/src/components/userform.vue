@@ -5,15 +5,15 @@
   <form @submit.prevent="handleSubmit">
     <div>
       <label class="form-label" for="name">Name</label>
-      <input  class="form-control" type="text" id="name" v-model="formData.name" />
+      <input  class="form-control" type="text" id="name" v-model="formData.name" required />
     </div>
     <div>
       <label class="form-label" for="email">Email</label>
-      <input  class="form-control" type="email" id="email" v-model="formData.email" />
+      <input  class="form-control" type="email" id="email" v-model="formData.email" required />
     </div>
        <div>
       <label class="form-label" for="phone">Phone</label>
-      <input  class="form-control" type="text" id="phone" v-model="formData.phone" />
+      <input  class="form-control" type="text" id="phone" v-model="formData.phone"  required/>
     </div>
     <div>
       <label class="form-label dob" for="dob">DOB</label>
@@ -21,7 +21,7 @@
     </div>
     <div>
       <label class="form-label" for="address">Address</label>
-      <input  class="form-control" type="text" id="address" v-model="formData.address" /> 
+      <input  class="form-control" type="text" id="address" v-model="formData.address" required /> 
     </div>
     <button type="submit">Submit</button>
   </form>
@@ -50,13 +50,24 @@ const formData = reactive({
   address:''
 });
 
+  // const allFieldsFilled = computed(() =>{
+  //   return Object.values(formData).every(value => !!value);
+  // });
+
 const handleSubmit = async (event) => {
         event.preventDefault(); 
         console.log("userform",formData);
           // const newuser = await postUser(formData);
           // console.log('Form submitted:', newuser);
-          await userStore.adduser(formData);
+          try {
+           const res =  await userStore.adduser(formData);
+          alert(`${res.message}`);
             router.push('/');
+          } catch (error) {
+        console.error('Failed to register User:', error);
+          alert(`This email is already registered, please change it and try again.`); 
+          
+      }
         
 };
 </script>
@@ -93,9 +104,6 @@ button {
   cursor: pointer;
 }
 
-button:hover {
-  background-color: #0056b3;
-}
     h2{
         text-align: center;
     }

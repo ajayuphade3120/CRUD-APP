@@ -12,6 +12,11 @@ export const useUserStore = defineStore('user',{
         async getAllUsers (){
             try {
                 const response = await api.get(`/users`);
+            for (const user of response.data) {
+            user.dob = new Date(user.dob);
+            const formattedDate = user.dob.toISOString().substring(0, 10);
+            user.dob = formattedDate          
+            }
                 this.users = response.data;
                 return  response.data;
             } catch (error) {
@@ -24,13 +29,21 @@ export const useUserStore = defineStore('user',{
             try {
                 const response = await api.post(`/create`,newuser);
                 this.users.push(response.data);
-            } catch (error) {
-                this.error = "failed to add user";
-                console.log(error);
-            }
+            return (await response).data
+              } catch (error) {
+                console.error('failed to add user:', error);
+                throw error; 
+              }
         },
         async updateUser(userId,updateduser){
             try {
+            const emailExists = this.users.some(
+            (user) => user.id !== userId && user.email === updateduser.email
+             );
+            if (emailExists) {
+            this.error = "Email already exists for another user.";
+            return { success: false, message: this.error };
+            }
                 const response = await api.post(`/update/${userId}`,updateduser);
                 const index = this.users.findIndex(user => user.id === userId);
         if (index !== -1) {
@@ -38,7 +51,7 @@ export const useUserStore = defineStore('user',{
         }
             } catch (error) {
                 this.error =  "failed to update user";
-                console.log(error);
+                throw error;
 
             }
         },
@@ -66,6 +79,11 @@ export const useUserStore = defineStore('user',{
             async serchuserdata (query){
             try {
                 const response = await api.get(`search?query=${query}`);
+            for (const user of response.data) {
+            user.dob = new Date(user.dob);
+            const formattedDate = user.dob.toISOString().substring(0, 10);
+            user.dob = formattedDate          
+            }
                 this.users = response.data;
                 console.log("response.data;",response.data);
                 

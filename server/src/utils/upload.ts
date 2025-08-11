@@ -42,9 +42,10 @@ router.post("/upload", async (req: Request, res: Response) => {
       const result = await saveUser(user);
       if (!result.success) {
         console.error("Failed to save user:", user.name);
+        return  res.status(500).json({ message: `${user.email} is Already exists, Please Changed it in CSV file and try again.` });
       }
     }
-       res.json({message: 'Data saved and updated successfully!',status: 'success',});
+       res.json({message: ' CSV Updated and Data saved successfully!'});
     console.log("CSV data:", users);
     });
 });

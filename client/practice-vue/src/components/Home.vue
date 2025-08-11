@@ -4,14 +4,14 @@
     <div>
    <div style="display: flex;">
     <input style="width: 60%; margin-right: 20px;" type="file" class="form-control" ref="myFile" @change="handleFileChange" accept=".csv" />
-    <button  class="btn btn-primary" @click="uploadCsv" :disabled="!selectedFile">Upload CSV</button>
+    <button  class="btn btn-primary" @click="uploadCsv" >Upload CSV</button>
   </div>
   </div>
 </div>
   <div class="home-table-container">
     <div>
     </div>
-    <EasyDataTable :headers="headers" :items="users" >
+    <EasyDataTable :headers="headers" :items="usersWithSrno">
       <template #item-action="item">
       <button class="btn btn-outline-success btn-sm m-2" @click="editItem(item)">Edit</button>
       <button class="btn btn-outline-danger btn-sm m-2" @click="deleteItem(item)">Delete</button>
@@ -24,7 +24,7 @@
 <script setup >
 // import { getusers } from "@/services/api";
 import EasyDataTable from "vue3-easy-data-table";
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, computed } from 'vue';
 import router from "@/routes";
 // import { deleteUser } from "@/services/api";
 // import { uploadCSV } from "@/services/api";
@@ -33,19 +33,20 @@ import { useUserStore } from "@/stores/userStore";
 const userStore = useUserStore();
 
 const headers= [
+   { text: "SrNo.", value: "srno" },
   { text: 'Name', value: 'name' },
   { text: 'Email', value: 'email', sortable: true },
   { text: 'Phone', value: 'phone' },
   { text: 'Date of Birth', value: 'dob' },
   { text: 'Address', value: 'address' },
    { text: 'Action', value: 'action' },
-
+   
 ];
 
 const users =  ref([]);
 const selectedFile = ref(null);
 const myFile = ref(null);
-
+  
 const handleFileChange = (event) => {
   selectedFile.value = event.target.files[0];
 };
@@ -62,19 +63,23 @@ const handleFileChange = (event) => {
    const response = await userStore.uploadCSV(formData);
     getusersdata();
     console.log('CSV uploaded successfully:', response);
-    alert('CSV uploaded successfully!');
+    alert(`${response.message}`);
     myFile.value.value = '';
     selectedFile.value = null;
   } catch (error) {
     console.error('Error uploading CSV:', error);
-    alert('Error uploading CSV. Please try again.');
+    alert(`${error.response.data.message}`);
   }
 };
 onMounted(async () => {
   // await  userStore.getAllUsers();
     getusersdata();
-    
 });
+
+  const usersWithSrno = computed(() => {
+        return userStore.users.map((item, index) => ({ ...item, srno: index + 1 }));
+
+    });
   const addUserdata = async()=>{
     userStore.hideSearch();
     router.push('/userform');

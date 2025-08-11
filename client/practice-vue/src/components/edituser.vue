@@ -46,8 +46,11 @@ const message = ref('');
         event.preventDefault(); 
   try {
     //  await updateUser(userId.value, users.value);
-      await userStore.updateUser(userId.value, users.value);
-    message.value = 'User updated successfully!';
+      const result = await userStore.updateUser(userId.value, users.value);
+      if (!result.success) {
+        alert(result.message); 
+        return;
+      }
     router.push('/');
   } catch (error) {
     message.value = 'Error updating user.';

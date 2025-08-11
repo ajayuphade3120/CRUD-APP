@@ -40,11 +40,11 @@ import { Request, Response } from "express";
    const adduser = async (req: Request, res: Response) => {
   const user = req.body;
   const result = await saveUser(user);
-
   if (result.success) {
-    res.status(200).json({ message: "User saved successfully" });
-  } else {
-    res.status(500).json({ error: "Failed to save user" });
+    res.status(200).json({ message: "User registered successfully" });
+  } else {    
+    console.error("Failed to save user:", user.name);
+    return res.status(500).json({ message: `${user.email} is Already Registred, Please Changed it and try again.`});
   }
 };
 
