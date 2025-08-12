@@ -136,7 +136,7 @@ import { Request, Response } from "express";
 
     try {
         const result = await pool.query(
-            `SELECT * FROM users WHERE name ILIKE $1 OR email ILIKE $1 OR phone ILIKE $1`,[`%${query}%`]);
+            `SELECT * FROM search_users_by_keyword($1)`,[`%${query}%`]);
         res.json(result.rows);
     } catch (err) {
         console.error('Error executing query:', err);
